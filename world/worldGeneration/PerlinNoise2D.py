@@ -27,5 +27,6 @@ class PerlinNoise2D():
                 # Modify the element at position [i][j]
                 self.map[i][j] = random.randint(0, 1) * 10
 
+
     def calculate(self):
         pass
