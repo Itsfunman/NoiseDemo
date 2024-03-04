@@ -44,7 +44,15 @@ class PerlinNoise2D():
 
 
         # Let's just build a coordinate system for now which combines theses valuess
-        pass
+        border_A = i - (i % 2)
+        border_B = border_A + 20
+        border_C = j - (j % 20)
+        border_D = border_C + 20
 
-    def calculate(self):
-        pass
+        point_A = self.map[border_A][border_C]
+        point_B = self.map[border_A][border_D]
+        point_C = self.map[border_B][border_C]
+        point_D = self.map[border_B][border_D]
+
+        diff_AD = (point_D - point_A) * -1
+        diff_BC = (point_C - point_B) * -1
