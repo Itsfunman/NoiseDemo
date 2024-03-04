@@ -40,7 +40,7 @@ class PerlinNoise2D():
         # if 8 from point A (being 0) and 12 (being 1) from point B it is 0.4
         # but how would the second axis affect this?
         # say it is 5 from C (0) and 15 from D (1) it would be 0.25
-        # How would 0.25 and 0.4 combine?
+        # How would 0.25 and 0.4 combine? middle (0.25 + 0.4 = 0.65 / 2 = 0.325)?
 
 
         # Let's just build a coordinate system for now which combines theses valuess
