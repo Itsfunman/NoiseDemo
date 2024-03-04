@@ -4,11 +4,11 @@ from world.worldGeneration.worldBuilder import WorldBuilder
 
 class Game:
     def __init__(self):
-        self.width = 900
-        self.height = 650
+        self.width = 80
+        self.height = 80
         self.active_x_zero = 0
         self.active_y_zero = 0
-        self.worldBuilder = WorldBuilder(worldWidth=self.width/25, worldHeight=self.height/25)
+        self.worldBuilder = WorldBuilder(worldWidth=self.width, worldHeight=self.height)
 
     def run(self):
         pg.init()

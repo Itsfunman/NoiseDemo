@@ -4,18 +4,19 @@ import random
 
 class PerlinNoise2D():
 
-    # width and height should be dividable by 20, 10 and 5
     def __init__(self, width, height):
-        self.map = [[0 for _ in range(width)] for _ in range(height)]
+        self.width = int(width)
+        self.height = int(height)
+        self.map = [[0 for _ in range(self.width)] for _ in range(self.height)]
+
+
         self.build()
 
     def build(self):
 
         self.build_one()
-        self.calculate()
+        self.noise()
 
-        for row in self.map:
-            print(row)
 
     def build_one(self):
         round_key = 20
@@ -29,12 +30,14 @@ class PerlinNoise2D():
     def noise(self):
         for i in range(len(self.map)):
             for j in range(len(self.map[i])):
-                if j % 20 == 0:
-                    pass
+                # Skip only if both i and j are multiples of 20, but not at (0, 0)
+                if i % 20 == 0 and j % 20 == 0:
+                    continue
                 else:
-                    self.map[i][j] = self.calculateValue(i,j)
+                    self.map[i][j] = self.calculateValue(i, j)
 
     def calculateValue(self, i, j):
+
         # Calculate distance to corner points (j mod 20 = predefined value)
         # get float based on distance values no clue what to do then
         # maybe make calculations based on where the point is and the distance
@@ -45,45 +48,40 @@ class PerlinNoise2D():
 
 
         # Let's just build a coordinate system for now which combines theses valuess
-        border_A = i - (i % 2)
+        # Calculate border points based on i, j within the map
+        border_A = i - (i % 20)
         border_B = border_A + 20
         border_C = j - (j % 20)
         border_D = border_C + 20
 
-        point_A = self.map[border_A][border_C]
-        point_B = self.map[border_A][border_D]
-        point_C = self.map[border_B][border_C]
-        point_D = self.map[border_B][border_D]
+        # Ensure border_B does not exceed map height
+        if border_B > self.height:
+            print(f"border_B ({border_B}) out of bounds. Adjusting to self.height ({self.height}).")
+            border_B = self.height
 
-        diff_AD = (point_D - point_A) * -1
-        diff_BC = (point_C - point_B) * -1
+        # Ensure border_D does not exceed map width
+        if border_D > self.width:
+            print(f"border_D ({border_D}) out of bounds. Adjusting to self.width ({self.width}).")
+            border_D = self.width
 
-        x = i % 20
-        y = j % 20
+        # Ensure border_A is within height bounds
+        if border_A >= self.height or border_A < 0:
+            print(f"border_A ({border_A}) out of bounds.")
 
-        val_one = self.get_pos_val(diff_AD, x, y)
-        val_two = self.get_pos_val(diff_BC, x, y)
+        # Ensure border_C is within width bounds
+        if border_C >= self.width or border_C < 0:
+            print(f"border_C ({border_C}) out of bounds.")
 
-        val = (val_one + val_two) / 2
-        return val
+        point_A = self.map[border_A][border_C] if border_A < self.height and border_C < self.width else 0
+        point_B = self.map[border_A][border_D - 1] if border_A < self.height and border_D <= self.width else 0
+        point_C = self.map[border_B - 1][border_C] if border_B <= self.height and border_C < self.width else 0
+        point_D = self.map[border_B - 1][border_D - 1] if border_B <= self.height and border_D <= self.width else 0
 
-    def get_pos_val(self, diff, x, y):
+        x_frac = (i % 20) / 20
+        y_frac = (j % 20) / 20
 
-        dis_one = self.calc_dis_down(x,y)
-        dis_two = self.calc_dis_up(x,y)
+        val_AB = point_A + (point_B - point_A) * x_frac
+        val_CD = point_C + (point_D - point_C) * x_frac
+        val_final = val_AB + (val_CD - val_AB) * y_frac
 
-        dis = dis_one + dis_two
-        brackets = diff / dis
-        return brackets * dis_one
-
-    def calc_dis_down(self, x, y):
-        hypo = math.sqrt(x**2 + y**2)
-        return hypo
-
-    def calc_dis_up(self, x, y):
-        x1 = 20 - x
-        y1 = 20 - y
-
-        hypo = math.sqrt(x1 ** 2 + y1 ** 2)
-        return hypo
-
+        return val_final
