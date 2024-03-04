@@ -1,3 +1,4 @@
+import math
 import random
 
 
@@ -31,7 +32,7 @@ class PerlinNoise2D():
                 if j % 20 == 0:
                     pass
                 else:
-                    self.calculateValue(i,j)
+                    self.map[i][j] = self.calculateValue(i,j)
 
     def calculateValue(self, i, j):
         # Calculate distance to corner points (j mod 20 = predefined value)
@@ -56,3 +57,33 @@ class PerlinNoise2D():
 
         diff_AD = (point_D - point_A) * -1
         diff_BC = (point_C - point_B) * -1
+
+        x = i % 20
+        y = j % 20
+
+        val_one = self.get_pos_val(diff_AD, x, y)
+        val_two = self.get_pos_val(diff_BC, x, y)
+
+        val = (val_one + val_two) / 2
+        return val
+
+    def get_pos_val(self, diff, x, y):
+
+        dis_one = self.calc_dis_down(x,y)
+        dis_two = self.calc_dis_up(x,y)
+
+        dis = dis_one + dis_two
+        brackets = diff / dis
+        return brackets * dis_one
+
+    def calc_dis_down(self, x, y):
+        hypo = math.sqrt(x**2 + y**2)
+        return hypo
+
+    def calc_dis_up(self, x, y):
+        x1 = 20 - x
+        y1 = 20 - y
+
+        hypo = math.sqrt(x1 ** 2 + y1 ** 2)
+        return hypo
+
