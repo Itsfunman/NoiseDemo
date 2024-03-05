@@ -1,3 +1,5 @@
+import colorsys
+
 import pygame
 
 
@@ -7,11 +9,15 @@ class LevelManager:
         self.tiles = self.loadLevel(fileName)
 
     def drawLevel(self, window):
-        tile_size = 25  # Adjust the tile size as needed
+        tile_size = 5  # Adjust the tile size as needed
         for row_index, tileRow in enumerate(self.tiles):
             for col_index, tile in enumerate(tileRow):
-                pygame.draw.rect(window, (255, 255, 255, int(tile)),
-                                 (col_index * tile_size, row_index * tile_size, tile_size, tile_size))
+                if tile:
+                    # Convert hue to RGB color
+                    hue = float(tile)
+                    rgb_color = colorsys.hsv_to_rgb(0.0, 0.0, hue)
+                    rect = pygame.Rect(col_index * tile_size, row_index * tile_size, tile_size, tile_size)
+                    pygame.draw.rect(window, rgb_color, rect)
 
     def loadLevel(self, filename):
         tiles = []

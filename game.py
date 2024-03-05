@@ -4,8 +4,8 @@ from world.worldGeneration.worldBuilder import WorldBuilder
 
 class Game:
     def __init__(self):
-        self.width = 80
-        self.height = 80
+        self.width = 900
+        self.height = 800
         self.active_x_zero = 0
         self.active_y_zero = 0
         self.worldBuilder = WorldBuilder(worldWidth=self.width, worldHeight=self.height)
