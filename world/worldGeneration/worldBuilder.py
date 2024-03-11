@@ -31,7 +31,7 @@ class WorldBuilder:
 
             for i in range(self.worldHeight):
                 for k in range(self.worldWidth):
-                    file.write(str(int(numpy.round(self.perlinNoise2D.map[i][k] * 255))) + ",")
+                    file.write(str(int(self.perlinNoise2D.map[i][k])) + ",")
                 file.write("\n")
 
         return randomLevelName

@@ -25,7 +25,7 @@ class PerlinNoise2D():
             # Iterate over the columns with a step of roundKey
             for j in range(0, len(self.map[i]), round_key):
                 # Modify the element at position [i][j]
-                self.map[i][j] = random.randint(0, 1)
+                self.map[i][j] = random.randint(0, 360)
 
     def noise(self):
         for i in range(len(self.map)):
