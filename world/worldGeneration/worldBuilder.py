@@ -8,11 +8,11 @@ from world.worldGeneration.PerlinNoise2D import PerlinNoise2D
 
 class WorldBuilder:
 
-    def __init__(self, worldWidth, worldHeight):
+    def __init__(self, worldWidth, worldHeight, base_dist):
         self.worldWidth = int(worldWidth)
         self.worldHeight = int(worldHeight)
 
-        self.perlinNoise2D = PerlinNoise2D(worldWidth,worldHeight)
+        self.perlinNoise2D = PerlinNoise2D(worldWidth,worldHeight, base_dist)
         self.worldFile = self.buildWorld()
 
     def buildWorld(self):
@@ -31,7 +31,7 @@ class WorldBuilder:
 
             for i in range(self.worldHeight):
                 for k in range(self.worldWidth):
-                    file.write(str(int(self.perlinNoise2D.map[i][k])) + ",")
+                    file.write(str(self.perlinNoise2D.map[i][k]) + ",")
                 file.write("\n")
 
         return randomLevelName

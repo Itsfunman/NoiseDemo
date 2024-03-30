@@ -1,87 +1,94 @@
-import math
 import random
 
-
-class PerlinNoise2D():
-
-    def __init__(self, width, height):
-        self.width = int(width)
-        self.height = int(height)
-        self.map = [[0 for _ in range(self.width)] for _ in range(self.height)]
-
-
+class PerlinNoise2D:
+    def __init__(self, width, height, base_dist):
+        self.width = width
+        self.height = height
+        self.base_dist = base_dist
+        self.map = [[170 for _ in range(self.width)] for _ in range(self.height)]
         self.build()
 
-    def build(self):
 
+    def build(self):
         self.build_one()
+        self.fill_lines()
         self.noise()
 
-
     def build_one(self):
-        round_key = 20
-        # Iterate over the rows with a step of roundKey
-        for i in range(0, len(self.map), round_key):
-            # Iterate over the columns with a step of roundKey
-            for j in range(0, len(self.map[i]), round_key):
-                # Modify the element at position [i][j]
-                self.map[i][j] = random.randint(0, 360)
+        # Ensuring we stay within bounds
+        for i in range(0, self.height, self.base_dist):
+            for j in range(0, self.width, self.base_dist):
+                self.map[i][j] = random.choice([0,255])
+
+    def fill_lines(self):
+        self.noise_v()
+        self.noise_h()
 
     def noise(self):
-        for i in range(len(self.map)):
-            for j in range(len(self.map[i])):
-                # Skip only if both i and j are multiples of 20, but not at (0, 0)
-                if i % 20 == 0 and j % 20 == 0:
-                    continue
-                else:
-                    self.map[i][j] = self.calculateValue(i, j)
+        for i in range(0, self.height):
+            if (i % self.base_dist) != 0:
+                for j in range(0, self.height):
+                    if (j % self.base_dist) != 0:
+                        val_h = self.calc_h(i,j)
+                        val_v = self.calc_v(i,j)
 
-    def calculateValue(self, i, j):
-
-        # Calculate distance to corner points (j mod 20 = predefined value)
-        # get float based on distance values no clue what to do then
-        # maybe make calculations based on where the point is and the distance
-        # if 8 from point A (being 0) and 12 (being 1) from point B it is 0.4
-        # but how would the second axis affect this?
-        # say it is 5 from C (0) and 15 from D (1) it would be 0.25
-        # How would 0.25 and 0.4 combine? middle (0.25 + 0.4 = 0.65 / 2 = 0.325)?
+                        val = int((val_h + val_v) / 2)
+                        self.map[i][j] = val
 
 
-        # Let's just build a coordinate system for now which combines theses valuess
-        # Calculate border points based on i, j within the map
-        border_A = i - (i % 20)
-        border_B = border_A + 20
-        border_C = j - (j % 20)
-        border_D = border_C + 20
+    def noise_h(self):
+        for i in range(0, self.height, self.base_dist):
+            for j in range(0, self.width):
+                if (j % self.base_dist) != 0 and self.map[i][j] != 0 and self.map[i][j] != 255:
+                    val = self.calc_h(i,j)
 
-        # Ensure border_B does not exceed map height
-        if border_B > self.height:
-            print(f"border_B ({border_B}) out of bounds. Adjusting to self.height ({self.height}).")
-            border_B = self.height
+                    self.map[i][j] = val
 
-        # Ensure border_D does not exceed map width
-        if border_D > self.width:
-            print(f"border_D ({border_D}) out of bounds. Adjusting to self.width ({self.width}).")
-            border_D = self.width
+    def noise_v(self):
+        for j in range(0, self.width, self.base_dist):
+            for i in range(0, self.height):
+                if (i % self.base_dist) != 0 and self.map[i][j] != 0 and self.map[i][j] != 255:
 
-        # Ensure border_A is within height bounds
-        if border_A >= self.height or border_A < 0:
-            print(f"border_A ({border_A}) out of bounds.")
+                    val = self.calc_v(i,j)
+                    self.map[i][j] = val
 
-        # Ensure border_C is within width bounds
-        if border_C >= self.width or border_C < 0:
-            print(f"border_C ({border_C}) out of bounds.")
+    def calc_h(self, i, j):
+        base_diff = j % self.base_dist
+        base_point = self.map[i][j - base_diff]
 
-        point_A = self.map[border_A][border_C] if border_A < self.height and border_C < self.width else 0
-        point_B = self.map[border_A][border_D - 1] if border_A < self.height and border_D <= self.width else 0
-        point_C = self.map[border_B - 1][border_C] if border_B <= self.height and border_C < self.width else 0
-        point_D = self.map[border_B - 1][border_D - 1] if border_B <= self.height and border_D <= self.width else 0
+        # Ensure the index for opp_point does not exceed self.width - 1
+        opp_index = min(j + (self.base_dist - base_diff), self.width - 1)
+        opp_point = self.map[i][opp_index]
 
-        x_frac = (i % 20) / 20
-        y_frac = (j % 20) / 20
+        return self.calc_diff(base_point, opp_point, base_diff)
 
-        val_AB = point_A + (point_B - point_A) * x_frac
-        val_CD = point_C + (point_D - point_C) * x_frac
-        val_final = val_AB + (val_CD - val_AB) * y_frac
+    def calc_v(self, i, j):
+        base_diff = i % self.base_dist
+        base_point = self.map[i - base_diff][j]
 
-        return val_final
+        # Ensure the index for opp_point does not exceed self.width - 1
+        opp_index = min(i + (self.base_dist - base_diff), self.height - 1)
+        opp_point = self.map[opp_index][j]
+
+        return self.calc_diff(base_point, opp_point, base_diff)
+
+    def calc_diff(self, base_point, opp_point, base_diff):
+        if base_point == opp_point:
+            return base_point
+        else:
+            val_diff = abs(base_point - opp_point)
+            if base_point > opp_point:
+                return self.calc_val(val_diff, self.base_dist - base_diff, base_point, opp_point)
+            else:
+                return self.calc_val(val_diff, base_diff, base_point, opp_point)
+
+
+    def calc_val(self, val_diff, diff, base_point, opp_point):
+        val = int(((val_diff / self.base_dist) * diff) + min(base_point, opp_point))
+        val += random.randint(-5, 5)
+        if val < 0:
+            return 0
+        elif val > 255:
+            return 255
+        else:
+            return val
