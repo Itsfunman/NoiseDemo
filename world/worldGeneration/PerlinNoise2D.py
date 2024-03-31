@@ -18,7 +18,7 @@ class PerlinNoise2D:
         # Ensuring we stay within bounds
         for i in range(0, self.height, self.base_dist):
             for j in range(0, self.width, self.base_dist):
-                self.map[i][j] = random.choice([0,255])
+                self.map[i][j] = random.choice([0, 51, 102, 153, 204, 255])
 
     def fill_lines(self):
         self.noise_v()
@@ -39,7 +39,7 @@ class PerlinNoise2D:
     def noise_h(self):
         for i in range(0, self.height, self.base_dist):
             for j in range(0, self.width):
-                if (j % self.base_dist) != 0 and self.map[i][j] != 0 and self.map[i][j] != 255:
+                if (j % self.base_dist) != 0: # and self.map[i][j] != 0 and self.map[i][j] != 255
                     val = self.calc_h(i,j)
 
                     self.map[i][j] = val
@@ -47,7 +47,7 @@ class PerlinNoise2D:
     def noise_v(self):
         for j in range(0, self.width, self.base_dist):
             for i in range(0, self.height):
-                if (i % self.base_dist) != 0 and self.map[i][j] != 0 and self.map[i][j] != 255:
+                if (i % self.base_dist) != 0: # and self.map[i][j] != 0 and self.map[i][j] != 255
 
                     val = self.calc_v(i,j)
                     self.map[i][j] = val
