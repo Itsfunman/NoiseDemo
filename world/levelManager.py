@@ -6,7 +6,7 @@ class LevelManager:
         self.tiles = self.loadLevel(fileName)
 
     def drawLevel(self, window):
-        tile_size = 1 # Adjust the tile size as needed
+        tile_size = 2 # Adjust the tile size as needed
         for row_index, tileRow in enumerate(self.tiles):
             for col_index, tile in enumerate(tileRow):
 
